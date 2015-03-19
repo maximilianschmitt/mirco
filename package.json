@@ -1,6 +1,6 @@
 {
   "name": "express-micro-service",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Easy microservices powered by Express.",
   "homepage": "https://github.com/maximilianschmitt/express-micro-service",
   "bugs": "https://github.com/maximilianschmitt/express-micro-service/issues",
