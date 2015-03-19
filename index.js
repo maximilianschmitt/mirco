@@ -1,8 +1,9 @@
 'use strict';
 
-let co         = require('co');
-let express    = require('express');
-let bodyParser = require('body-parser');
+let co           = require('co');
+let express      = require('express');
+let bodyParser   = require('body-parser');
+let objectAssign = require('object-assign');
 
 let service = function(service, endpoints) {
   let app = express();
@@ -31,7 +32,7 @@ let service = function(service, endpoints) {
             }
 
             res.status(500).json({ error: { name: 'Error', message: 'An unexpected error occurred. ' } });
-            return;
+            process.exit(1);
           }
 
           if (httpError) {
@@ -39,8 +40,15 @@ let service = function(service, endpoints) {
             return;
           }
 
-          res.status(400).json({ error: Object.assign({ name: err.name }, err) });
+          res.status(400).json({ error: objectAssign({ name: err.name }, err) });
         }
+      })
+      .catch(function(err) {
+        console.log(err);
+        if (err.stack) {
+          console.log(err.stack);
+        }
+        process.exit(1);
       });
     });
   });
