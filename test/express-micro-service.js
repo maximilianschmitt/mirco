@@ -20,7 +20,7 @@ describe('express-micro-service', function() {
       .to.eventually.be.fulfilled
       .then((res) => {
         expect(res.data).to.deep.equal({ success: true, echoed: { some: 'data' }});
-        server.kill();
+        return server.kill();
       });
   });
 
@@ -62,7 +62,7 @@ describe('express-micro-service', function() {
       .to.eventually.be.fulfilled
       .then((res) => {
         expect(res.data).to.deep.equal({ success: true, max: 'my name is max', julian: 'my name is julian' });
-        server.kill();
+        return server.kill();
       });
   });
 
@@ -112,6 +112,15 @@ function start(service) {
             return axios.post('http://localhost:' + port + method, data);
           };
 
+          let kill = p.kill.bind(p);
+          p.kill = function() {
+            kill();
+
+            return new Promise((resolve, reject) => {
+              p.on('exit', () => resolve());
+            });
+          };
+
           resolve(p);
         }
       });
@@ -124,5 +133,5 @@ function start(service) {
 
       process.on('exit', () => p.kill());
     });
-  })(++port);
+  })(port++);
 }
