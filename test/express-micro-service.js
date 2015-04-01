@@ -3,11 +3,11 @@
 
 require('co-mocha');
 
-let exec        = require('child_process').exec;
-let chai        = require('chai');
-let axios       = require('axios');
-let service     = require('..');
-let expect      = chai.expect;
+let exec    = require('child_process').exec;
+let chai    = require('chai');
+let axios   = require('axios');
+let service = require('..');
+let expect  = chai.expect;
 
 chai.use(require('chai-as-promised'));
 
