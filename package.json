@@ -1,6 +1,6 @@
 {
   "name": "express-micro-service",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Easy microservices powered by Express.",
   "homepage": "https://github.com/maximilianschmitt/express-micro-service",
   "bugs": "https://github.com/maximilianschmitt/express-micro-service/issues",
@@ -19,5 +19,17 @@
     "co": "^4.4.0",
     "express": "^4.12.2",
     "object-assign": "^2.0.0"
+  },
+  "devDependencies": {
+    "axios": "^0.5.2",
+    "chai": "^2.2.0",
+    "chai-as-promised": "^4.3.0",
+    "co": "^4.5.1",
+    "co-mocha": "^1.1.0",
+    "create-error": "^0.3.1",
+    "mocha": "^2.2.1"
+  },
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha --harmony_arrow_functions"
   }
 }

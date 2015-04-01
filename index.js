@@ -9,51 +9,54 @@ let service = function(service, endpoints) {
   let app = express();
   app.use(bodyParser.json());
 
-  endpoints.forEach(endpoint => {
+  endpoints.forEach(function(endpoint) {
     app.post('/' + endpoint.method, function(req, res) {
       let payload = req.body;
 
       co(function*() {
-        try {
-          let response = { success: true };
-          response[endpoint.returns] = yield service[endpoint.method](payload);
-          res.json(response);
-        } catch(err) {
-          let httpError = false;
+        let response = { success: true };
+        let result = yield service[endpoint.method](payload);
 
-          if (err.data && err.data.error && err.data.error.name) {
-            httpError = err.data.error;
-          }
-
-          if (!endpoint.catch || endpoint.catch.indexOf(httpError ? httpError.name : err.name) === -1) {
-            console.log(err);
-            if (err.stack) {
-              console.log(err.stack);
-            }
-
-            res.status(500).json({ error: { name: 'Error', message: 'An unexpected error occurred. ' } });
-            process.exit(1);
-          }
-
-          if (httpError) {
-            res.status(400).json({ error: httpError });
-            return;
-          }
-
-          res.status(400).json({ error: objectAssign({ name: err.name }, err) });
+        if (Array.isArray(endpoint.returns)) {
+          endpoint.returns.forEach(function(key) { response[key] = result[key]; });
+        } else if (endpoint.returns) {
+          response[endpoint.returns] = result;
         }
+
+        res.json(response);
       })
       .catch(function(err) {
-        console.log(err);
-        if (err.stack) {
-          console.log(err.stack);
-        }
-        process.exit(1);
+        handleError(err, endpoint, res);
+      })
+      .catch(function(err) {
+        // crash the process
+        setTimeout(function() {
+          throw err;
+        });
       });
     });
   });
 
   return app;
 };
+
+function handleError(err, endpoint, res) {
+  let httpError = false;
+
+  if (err.data && err.data.error && err.data.error.name) {
+    err = err.data.error;
+    httpError = true;
+  }
+
+  if (!endpoint.throws || endpoint.throws.indexOf(err.name) === -1) {
+    res.status(500).json({ error: { name: 'Error', message: 'An unexpected error occurred.' } });
+
+    if (!httpError) {
+      throw err;
+    }
+  }
+
+  res.status(400).json({ error: objectAssign({ name: err.name }, err) });
+}
 
 module.exports = service;
