@@ -1,5 +1,7 @@
 # express-micro-service
 
+![Travis Build](http://img.shields.io/travis/maximilianschmitt/express-micro-service.svg?style=flat)
+
 Easy microservices powered by Express.
 
 ## Installation
