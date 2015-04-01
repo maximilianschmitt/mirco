@@ -98,38 +98,40 @@ describe('express-micro-service', function() {
 let port = 3333;
 
 function start(service) {
-  let started = false;
+  return (function(port) {
+    let started = false;
 
-  return new Promise((resolve, reject) => {
-    let p = exec('SERVICE_PORT=' + port + ' node ' + __dirname + '/fixtures/' + service + '.js');
+    return new Promise((resolve, reject) => {
+      let p = exec('SERVICE_PORT=' + port + ' node ' + __dirname + '/fixtures/' + service + '.js');
 
-    p.stdout.on('data', function(data) {
-      if (!started && data.indexOf('Listening') !== -1) {
-        started = true;
+      p.stdout.on('data', function(data) {
+        if (!started && data.indexOf('Listening') !== -1) {
+          started = true;
 
-        p.post = function(method, data) {
-          return axios.post('http://localhost:' + port + method, data);
-        };
+          p.post = function(method, data) {
+            return axios.post('http://localhost:' + port + method, data);
+          };
 
-        let kill = p.kill.bind(p);
-        p.kill = function() {
-          kill();
+          let kill = p.kill.bind(p);
+          p.kill = function() {
+            kill();
 
-          return new Promise((resolve, reject) => {
-            p.on('exit', () => resolve());
-          });
-        };
+            return new Promise((resolve, reject) => {
+              p.on('exit', () => resolve());
+            });
+          };
 
-        resolve(p);
-      }
+          resolve(p);
+        }
+      });
+
+      p.stderr.on('data', function(data) {
+        if (!started) {
+          reject(data);
+        }
+      });
+
+      process.on('exit', () => p.kill());
     });
-
-    p.stderr.on('data', function(data) {
-      if (!started) {
-        reject(data);
-      }
-    });
-
-    process.on('exit', () => p.kill());
-  });
+  })(port++);
 }
