@@ -2,7 +2,15 @@
 
 Easy microservices powered by Express.
 
+## Installation
+
+```
+$ npm install express-micro-service
+```
+
 ## Usage
+
+Check out the tests for more information on what you can do with express-micro-service.
 
 ### Server
 
