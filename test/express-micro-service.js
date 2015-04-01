@@ -14,7 +14,7 @@ chai.use(require('chai-as-promised'));
 describe('express-micro-service', function() {
   it('exposes methods via post', function*() {
     let server = yield start('echoing-service');
-    let request = post('/echo', { some: 'data' });
+    let request = server.post('/echo', { some: 'data' });
 
     return expect(request)
       .to.eventually.be.fulfilled
@@ -26,7 +26,7 @@ describe('express-micro-service', function() {
 
   it('returns 400 for known errors', function*() {
     let server = yield start('known-error-service');
-    let request = post('/erroring');
+    let request = server.post('/erroring');
 
     return Promise
       .all([
@@ -41,7 +41,7 @@ describe('express-micro-service', function() {
 
   it('returns 500 for unknown errors', function*() {
     let server = yield start('unkown-error-service');
-    let request = post('/erroring');
+    let request = server.post('/erroring');
 
     return Promise
       .all([
@@ -56,7 +56,7 @@ describe('express-micro-service', function() {
 
   it('supports multiple return values', function*() {
     let server = yield start('multiple-return-values-service');
-    let request = post('/brothers');
+    let request = server.post('/brothers');
 
     return expect(request)
       .to.eventually.be.fulfilled
@@ -74,14 +74,14 @@ describe('express-micro-service', function() {
           done();
         });
 
-        return post('/erroring').catch(()=>{});
+        return server.post('/erroring').catch(()=>{});
       })
       .catch(done);
   });
 
   it('returns 500 for unexpected http errors', function*() {
     let server = yield start('unkown-http-error-service');
-    let request = post('/erroring');
+    let request = server.post('/erroring');
 
     return Promise
       .all([
@@ -95,29 +95,34 @@ describe('express-micro-service', function() {
   });
 });
 
+let port = 3333;
+
 function start(service) {
-  let started = false;
+  return (function(port) {
+    let started = false;
 
-  return new Promise((resolve, reject) => {
-    let p = exec('SERVICE_PORT=3333 node ' + __dirname + '/fixtures/' + service + '.js');
+    return new Promise((resolve, reject) => {
+      let p = exec('SERVICE_PORT=' + port + ' node ' + __dirname + '/fixtures/' + service + '.js');
 
-    p.stdout.on('data', function(data) {
-      if (!started && data.indexOf('Listening') !== -1) {
-        started = true;
-        resolve(p);
-      }
+      p.stdout.on('data', function(data) {
+        if (!started && data.indexOf('Listening') !== -1) {
+          started = true;
+
+          p.post = function(method, data) {
+            return axios.post('http://localhost:' + port + method, data);
+          };
+
+          resolve(p);
+        }
+      });
+
+      p.stderr.on('data', function(data) {
+        if (!started) {
+          reject(data);
+        }
+      });
+
+      process.on('exit', () => p.kill());
     });
-
-    p.stderr.on('data', function(data) {
-      if (!started) {
-        reject(data);
-      }
-    });
-
-    process.on('exit', () => p.kill());
-  });
-}
-
-function post(method, data) {
-  return axios.post('http://localhost:3333' + method, data);
+  })(++port);
 }
