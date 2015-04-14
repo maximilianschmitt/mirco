@@ -2,7 +2,7 @@
 
 ![Travis Build](http://img.shields.io/travis/maximilianschmitt/mirco.svg?style=flat)
 
-Easy microservices powered by Express.
+Easy microservices for node.js.
 
 ## Installation
 
