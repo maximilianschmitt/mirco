@@ -93,6 +93,40 @@ describe('express-micro-service', function() {
       ])
       .then(() => server.kill());
   });
+
+  it('returns 400 for known http errors', function*() {
+    let server = yield start('known-http-error-service');
+    let request = server.post('/erroring');
+
+    return Promise
+      .all([
+        request.catch((res) => {
+          expect(res.status).to.equal(400);
+          expect(res.data).to.deep.equal({ error: { name: 'KnownHttpError' }});
+        }),
+        expect(request).to.eventually.be.rejected
+      ])
+      .then(() => server.kill());
+  });
+
+  it('does not crash on unkown http errors', function*() {
+    let server = yield start('unkown-http-error-service');
+
+    return new Promise((res, rej) => {
+      server.on('exit', (code, signal) => {
+        expect(code).to.not.equal(1);
+        expect(signal).to.equal('SIGTERM');
+        res();
+      });
+
+      server.post('/erroring').then(() => kill()).catch(() => kill());
+    });
+
+    // use set timeout to prevent server.kill() from giving an exit code 0 before the server crashes
+    function kill() {
+      setTimeout(() => server.kill(), 500);
+    }
+  });
 });
 
 let port = 3333;

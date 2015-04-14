@@ -54,6 +54,8 @@ function handleError(err, endpoint, res) {
     if (!httpError) {
       throw err;
     }
+
+    return;
   }
 
   res.status(400).json({ error: objectAssign({ name: err.name }, err) });
