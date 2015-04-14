@@ -1,9 +1,9 @@
 {
-  "name": "express-micro-service",
-  "version": "0.1.1",
-  "description": "Easy microservices powered by Express.",
-  "homepage": "https://github.com/maximilianschmitt/express-micro-service",
-  "bugs": "https://github.com/maximilianschmitt/express-micro-service/issues",
+  "name": "mirco",
+  "version": "0.0.1",
+  "description": "Easy microservices for node.js.",
+  "homepage": "https://github.com/maximilianschmitt/mirco",
+  "bugs": "https://github.com/maximilianschmitt/mirco/issues",
   "license": "MIT",
   "author": {
     "name": "Maximilian Schmitt",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/maximilianschmitt/express-micro-service.git"
+    "url": "https://github.com/maximilianschmitt/mirco.git"
   },
   "dependencies": {
     "body-parser": "^1.12.0",

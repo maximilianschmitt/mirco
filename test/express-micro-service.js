@@ -11,7 +11,7 @@ let expect  = chai.expect;
 
 chai.use(require('chai-as-promised'));
 
-describe('express-micro-service', function() {
+describe('mirco', function() {
   it('exposes methods via post', function*() {
     let server = yield start('echoing-service');
     let request = server.post('/echo', { some: 'data' });

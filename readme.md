@@ -1,25 +1,25 @@
-# express-micro-service
+# mirco
 
-![Travis Build](http://img.shields.io/travis/maximilianschmitt/express-micro-service.svg?style=flat)
+![Travis Build](http://img.shields.io/travis/maximilianschmitt/mirco.svg?style=flat)
 
 Easy microservices powered by Express.
 
 ## Installation
 
 ```
-$ npm install express-micro-service
+$ npm install mirco
 ```
 
 ## Usage
 
-Check out the tests for more information on what you can do with express-micro-service.
+Check out the tests for more information on what you can do with mirco.
 
 ### Server
 
 ```js
 'use strict';
 
-let service = require('express-micro-service');
+let service = require('mirco');
 
 let server = service({
   hello: function(payload) {
