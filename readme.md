@@ -25,12 +25,10 @@ let server = service({
   hello: function(payload) {
     return 'Hello, ' + payload.name;
   }
-}, [
-  {
-    method: 'hello',
-    returns: 'greeting'
-  }
-]);
+}, [{
+  method: 'hello',
+  returns: 'greeting'
+}]);
 
 server.listen(process.env.SERVICE_PORT);
 ```
@@ -46,7 +44,5 @@ axios
   .post('http://localhost:' + process.env.SERVICE_PORT + '/hello', {
     name: 'Max'
   })
-  .then(res => {
-    console.log(res.data); // { greeting: 'Hello, Max' }
-  });
+  .then(res => console.log(res.data)); // { greeting: 'Hello, Max' }
 ```
